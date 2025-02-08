@@ -6,13 +6,14 @@ import { getFirestore } from 'firebase/firestore';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyBoNW3WxJsgcEmKJ2axxezJzsozUiHLkB4",
-    authDomain: "kp-police-complaint.firebaseapp.com",
-    projectId: "kp-police-complaint",
-    storageBucket: "kp-police-complaint.firebasestorage.app",
-    messagingSenderId: "1009906571632",
-    appId: "1:1009906571632:web:42e6131bf9866c5889d7b5"
-};
+    apiKey: "AIzaSyAaOhb7xKwiC34F21YvPFP6XjCnmZLvHww",
+    authDomain: "kpd-reception.firebaseapp.com",
+    projectId: "kpd-reception",
+    storageBucket: "kpd-reception.firebasestorage.app",
+    messagingSenderId: "132817952102",
+    appId: "1:132817952102:web:a14ccc852a21be0446fca7",
+    measurementId: "G-9XT25XGCBW"
+  };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
