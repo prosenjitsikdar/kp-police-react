@@ -1,24 +1,31 @@
-import React from 'react';
-import { db } from '../../firebase/firebase'; // Import db from Firebase
+import React, { useState } from 'react';
+import { db } from '../../firebase/firebase';
 import { deleteDoc, doc } from 'firebase/firestore';
+import EditSubCategoryModal from './EditSubCategoryModal'; // Import EditSubCategoryModal
 
 const ListSubCategory = ({ subCategories, categories, setSubCategories }) => {
+    const [editingSubCategory, setEditingSubCategory] = useState(null);
 
     // Function to handle deletion
     const handleDelete = async (subCategoryId) => {
         try {
-            // Deleting the subcategory from Firestore
             await deleteDoc(doc(db, 'sub_category', subCategoryId));
-
-            // Remove the deleted subcategory from state
             setSubCategories((prevSubCategories) =>
                 prevSubCategories.filter((subCategory) => subCategory.id !== subCategoryId)
             );
-
             console.log(`SubCategory with id ${subCategoryId} deleted successfully.`);
         } catch (error) {
             console.error('Error deleting subcategory:', error);
         }
+    };
+
+    // Function to handle edit
+    const handleEdit = (subCategory) => {
+        setEditingSubCategory(subCategory);
+    };
+
+    const closeEditModal = () => {
+        setEditingSubCategory(null);
     };
 
     return (
@@ -47,6 +54,12 @@ const ListSubCategory = ({ subCategories, categories, setSubCategories }) => {
                             </td>
                             <td className="px-6 py-2 text-sm text-gray-700">
                                 <button
+                                    onClick={() => handleEdit(subCategory)}
+                                    className="text-blue-600 hover:text-blue-800 mr-4"
+                                >
+                                    Edit
+                                </button>
+                                <button
                                     onClick={() => handleDelete(subCategory.id)}
                                     className="text-red-600 hover:text-red-800"
                                 >
@@ -57,6 +70,15 @@ const ListSubCategory = ({ subCategories, categories, setSubCategories }) => {
                     ))}
                     </tbody>
                 </table>
+            )}
+
+            {editingSubCategory && (
+                <EditSubCategoryModal
+                    subCategory={editingSubCategory}
+                    categories={categories}
+                    onClose={closeEditModal}
+                    onSubCategoryUpdated={setSubCategories}
+                />
             )}
         </div>
     );

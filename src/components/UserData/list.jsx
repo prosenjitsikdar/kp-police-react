@@ -16,6 +16,7 @@ const UserDataList = () => {
     const [updatedPoliceStation, setUpdatedPoliceStation] = useState(''); // For storing selected police station
     const [updatedNotificationId, setUpdatedNotificationId] = useState(''); // For storing notification_id based on police station selection
     const [selectedPoliceStation, setSelectedPoliceStation] = useState(''); // For filtering users by selected police station
+    const [isModalOpen, setIsModalOpen] = useState(false); // Modal visibility state
     const navigate = useNavigate(); // Hook for navigation
 
     const { currentUser } = useAuth();
@@ -78,6 +79,8 @@ const UserDataList = () => {
         // Get the corresponding notification_id for the police station
         const selectedPoliceStation = policeStations.find(station => station.id === user.police_station);
         setUpdatedNotificationId(selectedPoliceStation ? selectedPoliceStation.notification_id : ''); // Automatically set notification_id
+
+        setIsModalOpen(true); // Open the modal
     };
 
     // Handle update submission
@@ -107,6 +110,7 @@ const UserDataList = () => {
             );
 
             // Reset the edit state
+            setIsModalOpen(false); // Close the modal
             setEditUser(null);
             setUpdatedEmail('');
             setUpdatedFullName('');
@@ -195,115 +199,117 @@ const UserDataList = () => {
                 </table>
             )}
 
-            {/* Edit Form for updating user data */}
-            {editUser && (
-                <div className="mt-6 p-6 bg-gray-50 rounded-lg shadow-lg">
-                    <h3 className="text-xl font-semibold mb-4">Edit User</h3>
-                    <form onSubmit={handleUpdate}>
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700" htmlFor="updatedEmail">
-                                Email
-                            </label>
-                            <input
-                                type="email"
-                                id="updatedEmail"
-                                value={updatedEmail}
-                                onChange={(e) => setUpdatedEmail(e.target.value)}
-                                className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                required
-                            />
-                        </div>
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700" htmlFor="updatedFullName">
-                                Full Name
-                            </label>
-                            <input
-                                type="text"
-                                id="updatedFullName"
-                                value={updatedFullName}
-                                onChange={(e) => setUpdatedFullName(e.target.value)}
-                                className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                required
-                            />
-                        </div>
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700" htmlFor="updatedPhoneNumber">
-                                Phone Number
-                            </label>
-                            <input
-                                type="text"
-                                id="updatedPhoneNumber"
-                                value={updatedPhoneNumber}
-                                onChange={(e) => setUpdatedPhoneNumber(e.target.value)}
-                                className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                required
-                            />
-                        </div>
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700" htmlFor="updatedAddress">
-                                Address
-                            </label>
-                            <input
-                                type="text"
-                                id="updatedAddress"
-                                value={updatedAddress}
-                                onChange={(e) => setUpdatedAddress(e.target.value)}
-                                className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                required
-                            />
-                        </div>
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700" htmlFor="updatedRole">
-                                Role
-                            </label>
-                            <select
-                                id="updatedRole"
-                                value={updatedRole}
-                                onChange={(e) => setUpdatedRole(e.target.value)}
-                                className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                required
-                            >
-                                <option>Select Role</option>
-                                <option value="user">User</option>
-                                <option value="admin">Admin</option>
-                                <option value="superior">superior</option>
-                            </select>
-                        </div>
+            {/* Edit Form Modal */}
+            {isModalOpen && (
+                <div className="fixed inset-0 bg-gray-800 bg-opacity-50">
+                    <div className="bg-white p-6 rounded-lg w-1/2 shadow-lg">
+                        <h3 className="text-xl font-semibold mb-4">Edit User</h3>
+                        <form onSubmit={handleUpdate}>
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-gray-700" htmlFor="updatedEmail">
+                                    Email
+                                </label>
+                                <input
+                                    type="email"
+                                    id="updatedEmail"
+                                    value={updatedEmail}
+                                    onChange={(e) => setUpdatedEmail(e.target.value)}
+                                    className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    required
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-gray-700" htmlFor="updatedFullName">
+                                    Full Name
+                                </label>
+                                <input
+                                    type="text"
+                                    id="updatedFullName"
+                                    value={updatedFullName}
+                                    onChange={(e) => setUpdatedFullName(e.target.value)}
+                                    className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    required
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-gray-700" htmlFor="updatedPhoneNumber">
+                                    Phone Number
+                                </label>
+                                <input
+                                    type="text"
+                                    id="updatedPhoneNumber"
+                                    value={updatedPhoneNumber}
+                                    onChange={(e) => setUpdatedPhoneNumber(e.target.value)}
+                                    className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    required
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-gray-700" htmlFor="updatedAddress">
+                                    Address
+                                </label>
+                                <input
+                                    type="text"
+                                    id="updatedAddress"
+                                    value={updatedAddress}
+                                    onChange={(e) => setUpdatedAddress(e.target.value)}
+                                    className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    required
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-gray-700" htmlFor="updatedRole">
+                                    Role
+                                </label>
+                                <select
+                                    id="updatedRole"
+                                    value={updatedRole}
+                                    onChange={(e) => setUpdatedRole(e.target.value)}
+                                    className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    required
+                                >
+                                    <option>Select Role</option>
+                                    <option value="user">User</option>
+                                    <option value="admin">Admin</option>
+                                    <option value="superior">Superior</option>
+                                </select>
+                            </div>
 
-                        {/* Police Station Dropdown */}
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700" htmlFor="updatedPoliceStation">
-                                Police Station
-                            </label>
-                            <select
-                                id="updatedPoliceStation"
-                                value={updatedPoliceStation}
-                                onChange={(e) => {
-                                    const selectedStation = policeStations.find(station => station.id === e.target.value);
-                                    setUpdatedPoliceStation(e.target.value);
-                                    setUpdatedNotificationId(selectedStation ? selectedStation.notification_id : ''); // Set notification_id based on police station
-                                }}
-                                className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                required
-                            >
-                                <option value="">Select a Police Station</option>
-                                {policeStations.map((station) => (
-                                    <option key={station.id} value={station.id}>
-                                        {station.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
+                            {/* Police Station Dropdown */}
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-gray-700" htmlFor="updatedPoliceStation">
+                                    Police Station
+                                </label>
+                                <select
+                                    id="updatedPoliceStation"
+                                    value={updatedPoliceStation}
+                                    onChange={(e) => {
+                                        const selectedStation = policeStations.find(station => station.id === e.target.value);
+                                        setUpdatedPoliceStation(e.target.value);
+                                        setUpdatedNotificationId(selectedStation ? selectedStation.notification_id : ''); // Set notification_id based on police station
+                                    }}
+                                    className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    required
+                                >
+                                    <option value="">Select a Police Station</option>
+                                    {policeStations.map((station) => (
+                                        <option key={station.id} value={station.id}>
+                                            {station.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
 
-                        <div className="flex justify-center">
-                            <button
-                                type="submit"
-                                className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700"
-                            >
-                                Update User
-                            </button>
-                        </div>
-                    </form>
+                            <div className="flex justify-center">
+                                <button
+                                    type="submit"
+                                    className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700"
+                                >
+                                    Update User
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             )}
         </div>

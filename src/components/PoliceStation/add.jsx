@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/authContext';
 import { useNavigate } from 'react-router-dom';
 import { db } from '../../firebase/firebase';
-import { collection, addDoc, getDocs, query, orderBy, doc, deleteDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, orderBy, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import PoliceStationList from './list.jsx';
 
 const AddPoliceStationForm = () => {
@@ -29,7 +29,7 @@ const AddPoliceStationForm = () => {
                     id: doc.id,
                     ...doc.data()
                 }));
-                setPoliceStations(policeStationList); // Set police stations state
+                setPoliceStations(policeStationList);
             } catch (error) {
                 console.error('Error fetching police stations:', error);
             }
@@ -52,7 +52,7 @@ const AddPoliceStationForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const notificationId = generateNotificationId(); // Automatically generate a notification ID
+        const notificationId = generateNotificationId();
         const policeStationData = {
             name,
             notification_id: notificationId,
@@ -60,16 +60,12 @@ const AddPoliceStationForm = () => {
         };
 
         try {
-            // Add police station to Firestore
             const docRef = await addDoc(collection(db, 'police_station'), policeStationData);
             const newPoliceStation = { id: docRef.id, ...policeStationData };
 
-            // Immediately update the state to reflect the added police station
             setPoliceStations((prevPoliceStations) => [newPoliceStation, ...prevPoliceStations]);
 
             console.log('Police Station Added:', newPoliceStation);
-
-            // Clear input fields after submission
             setName('');
         } catch (error) {
             console.error('Error adding police station: ', error);
@@ -79,11 +75,9 @@ const AddPoliceStationForm = () => {
     // Handle deleting a police station
     const handleDelete = async (id) => {
         try {
-            // Delete the police station from Firestore
             const policeStationRef = doc(db, 'police_station', id);
             await deleteDoc(policeStationRef);
 
-            // Remove the deleted police station from the local state
             setPoliceStations((prevPoliceStations) =>
                 prevPoliceStations.filter((station) => station.id !== id)
             );
@@ -91,6 +85,26 @@ const AddPoliceStationForm = () => {
             console.log('Police Station Deleted:', id);
         } catch (error) {
             console.error('Error deleting police station: ', error);
+        }
+    };
+
+    // Handle updating a police station
+    const handleEdit = async (id, updatedName) => {
+        try {
+            const policeStationRef = doc(db, 'police_station', id);
+            await updateDoc(policeStationRef, {
+                name: updatedName
+            });
+
+            setPoliceStations((prevPoliceStations) =>
+                prevPoliceStations.map((station) =>
+                    station.id === id ? { ...station, name: updatedName } : station
+                )
+            );
+
+            console.log('Police Station Updated:', id);
+        } catch (error) {
+            console.error('Error updating police station: ', error);
         }
     };
 
@@ -125,8 +139,11 @@ const AddPoliceStationForm = () => {
                 </form>
             </div>
 
-            {/* Pass the police stations state and handleDelete method to PoliceStationList */}
-            <PoliceStationList policeStations={policeStations} handleDelete={handleDelete} />
+            <PoliceStationList
+                policeStations={policeStations}
+                handleDelete={handleDelete}
+                handleEdit={handleEdit}
+            />
         </>
     );
 };
