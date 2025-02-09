@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../../contexts/authContext';
 import { useNavigate } from 'react-router-dom';
 import { db } from '../../firebase/firebase';
 import { deleteDoc, doc } from 'firebase/firestore';
+import EditCategoryModal from './EditCategoryModal'; // Import EditCategoryModal
 
 const ListCategory = ({ categories, onCategoryAdded }) => {
     const { currentUser } = useAuth();
     const navigate = useNavigate();
+    const [editingCategory, setEditingCategory] = useState(null);
 
     if (!currentUser) {
         return <div>Loading...</div>;
@@ -19,6 +21,14 @@ const ListCategory = ({ categories, onCategoryAdded }) => {
         } catch (error) {
             console.error('Error deleting category:', error);
         }
+    };
+
+    const handleEdit = (category) => {
+        setEditingCategory(category); // Set the category to be edited
+    };
+
+    const closeEditModal = () => {
+        setEditingCategory(null); // Close the modal when done
     };
 
     return (
@@ -39,6 +49,12 @@ const ListCategory = ({ categories, onCategoryAdded }) => {
                         <td className="px-6 py-2 text-sm text-gray-700">{category.notificationType}</td>
                         <td className="px-6 py-2 text-sm text-gray-700">
                             <button
+                                onClick={() => handleEdit(category)}
+                                className="text-blue-600 hover:text-blue-800 mr-2"
+                            >
+                                Edit
+                            </button>
+                            <button
                                 onClick={() => handleDelete(category.id)}
                                 className="text-red-600 hover:text-red-800"
                             >
@@ -49,6 +65,15 @@ const ListCategory = ({ categories, onCategoryAdded }) => {
                 ))}
                 </tbody>
             </table>
+
+            {/* Render the modal if there is an editing category */}
+            {editingCategory && (
+                <EditCategoryModal
+                    category={editingCategory}
+                    onClose={closeEditModal}
+                    onCategoryUpdated={onCategoryAdded}
+                />
+            )}
         </div>
     );
 };
