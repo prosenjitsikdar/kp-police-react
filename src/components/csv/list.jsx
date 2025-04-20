@@ -65,7 +65,7 @@ const CsvDownload = () => {
             complaint.address,
             complaint.complainType,
             complaint.description,
-            complaint.police_station,
+            policeStations.find(station => station.id === complaint.police_station)?.name || complaint.police_station,
             complaint.receptionistName,
             complaint.receptionistMobile,
             complaint.timestamp
@@ -130,13 +130,13 @@ const CsvDownload = () => {
 
             <h3 className="text-xl font-semibold mb-2">Complaints</h3>
             {selectedStation && (
-    <button
-        onClick={downloadCSV}
-        className="mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-    >
-        Download CSV
-    </button>
-)}
+                <button
+                    onClick={downloadCSV}
+                    className="mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                >
+                    Download CSV
+                </button>
+            )}
             {loading ? (
                 <p>Loading complaints...</p>
             ) : (
@@ -151,7 +151,9 @@ const CsvDownload = () => {
                                     <p><strong>Description:</strong> {complaint.description}</p>
                                     <p><strong>Name:</strong> {complaint.name}</p>
                                     <p><strong>Phone:</strong> {complaint.phone}</p>
-                                    <p><strong>Station ID:</strong> {complaint.police_station}</p>
+                                    <p><strong>Police Station:</strong> {
+                                        policeStations.find(station => station.id === complaint.police_station)?.name || 'Unknown'
+                                    }</p>
                                     <p><strong>Receptionist Name:</strong> {complaint.receptionistName}</p>
                                     <p><strong>Receptionist Mobile:</strong> {complaint.receptionistMobile}</p>
                                     <p><strong>Complain Register Time:</strong> {
