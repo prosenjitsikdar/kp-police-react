@@ -1,33 +1,38 @@
 import React, { useState, useEffect } from 'react';
-import { db } from '../../firebase/firebase'; // Adjust the import if necessary
+import { db } from '../../firebase/firebase';
 import { useAuth } from '../../contexts/authContext';
 import { collection, getDocs } from 'firebase/firestore';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
+import { useNavigate } from 'react-router-dom';
 
 const CsvDownload = () => {
-    const navigate = useNavigate(); // Hook for navigation
-    const { currentUser  } = useAuth();
-    const [policeStations, setPoliceStations] = useState([]); // State to hold police station data
-    const [loading, setLoading] = useState(true); // State to manage loading state
+    const navigate = useNavigate();
+    const { currentUser } = useAuth();
+    const [policeStations, setPoliceStations] = useState([]);
+    const [complaints, setComplaints] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [selectedStation, setSelectedStation] = useState('');
 
     useEffect(() => {
-        // Redirect to login if no currentUser  is found
-        if (!currentUser ) {
-            navigate('/login'); // Redirect to login page
+        if (!currentUser) {
+            navigate('/login');
         } else {
-            fetchPoliceStations(); // Fetch police stations if user is authenticated
+            fetchData();
         }
-    }, [currentUser , navigate]);
+    }, [currentUser, navigate]);
 
-    const fetchPoliceStations = async () => {
+    const fetchData = async () => {
         try {
-            const querySnapshot = await getDocs(collection(db, 'police_station'));
-            const stations = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setPoliceStations(stations); // Set the fetched data to state
+            const policeSnapshot = await getDocs(collection(db, 'police_station'));
+            const policeList = policeSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setPoliceStations(policeList);
+
+            const complaintsSnapshot = await getDocs(collection(db, 'complaints'));
+            const complaintsList = complaintsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setComplaints(complaintsList);
         } catch (error) {
-            console.error("Error fetching police stations: ", error);
+            console.error("Error fetching data: ", error);
         } finally {
-            setLoading(false); // Set loading to false after fetching
+            setLoading(false);
         }
     };
 
@@ -37,32 +42,49 @@ const CsvDownload = () => {
 
             <div className="mb-4 flex justify-between items-center">
                 <div className="w-1/2">
-                    <label className="block text-sm font-medium text-gray-700" htmlFor="filterPoliceStation">
-                        Filter by Police Station
-                    </label>
-                    {/* You can add a dropdown or input here to filter the police stations */}
-                </div>
-            </div>
-
-            {loading ? (
-                <p>Loading police stations...</p>
-            ) : (
-                <div className="w-1/2">
                     <label className="block text-sm font-medium text-gray-700" htmlFor="policeStationSelect">
                         Select a Police Station
                     </label>
-                    <select
-                        id="policeStationSelect"
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    >
-                        <option value="">-- Select --</option>
-                        {policeStations.map(station => (
-                            <option key={station.id} value={station.id}>
-                                {station.name}
-                            </option>
-                        ))}
-                    </select>
+                    {loading ? (
+                        <p>Loading police stations...</p>
+                    ) : (
+                        <select
+                            id="policeStationSelect"
+                            value={selectedStation}
+                            onChange={(e) => setSelectedStation(e.target.value)}
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        >
+                            <option value="">-- Select --</option>
+                            {policeStations.map(station => (
+                                <option key={station.id} value={station.id}>
+                                    {station.name}
+                                </option>
+                            ))}
+                        </select>
+                    )}
                 </div>
+            </div>
+
+            <hr className="my-6" />
+
+            <h3 className="text-xl font-semibold mb-2">Complaints</h3>
+            {loading ? (
+                <p>Loading complaints...</p>
+            ) : (
+                <ul className="space-y-2">
+                    {complaints.map(complaint => (
+                        <li key={complaint.id} className="p-4 border rounded-md shadow-sm bg-gray-50">
+                            <p><strong>Address:</strong> {complaint.address}</p>
+                            <p><strong>Complain Type:</strong> {complaint.complainType}</p>
+                            <p><strong>Description:</strong> {complaint.description}</p>
+                            <p><strong>Name:</strong> {complaint.name}</p>
+                            <p><strong>Phone:</strong> {complaint.phone}</p>
+                            <p><strong>Station ID:</strong> {complaint.police_station}</p>
+                            <p><strong>Receptionist Name:</strong> {complaint.receptionistName}</p>
+                            <p><strong>Receptionist Mobile:</strong> {complaint.receptionistMobile}</p>
+                        </li>
+                    ))}
+                </ul>
             )}
         </div>
     );
