@@ -47,13 +47,22 @@ const CsvDownload = () => {
             {loading ? (
                 <p>Loading police stations...</p>
             ) : (
-                <ul>
-                    {policeStations.map(station => (
-                        <li key={station.id} className="border-b py-2">
-                            {station.name} {/* Adjust this to match your data structure */}
-                        </li>
-                    ))}
-                </ul>
+                <div className="w-1/2">
+                    <label className="block text-sm font-medium text-gray-700" htmlFor="policeStationSelect">
+                        Select a Police Station
+                    </label>
+                    <select
+                        id="policeStationSelect"
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    >
+                        <option value="">-- Select --</option>
+                        {policeStations.map(station => (
+                            <option key={station.id} value={station.id}>
+                                {station.name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
             )}
         </div>
     );
