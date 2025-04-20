@@ -36,6 +36,67 @@ const CsvDownload = () => {
         }
     };
 
+
+    const downloadCSV = () => {
+        const filteredComplaints = complaints.filter(
+            (complaint) => complaint.police_station === selectedStation
+        );
+    
+        if (filteredComplaints.length === 0) {
+            alert('No complaints to download.');
+            return;
+        }
+    
+        const headers = [
+            'Name',
+            'Phone',
+            'Address',
+            'Complain Type',
+            'Description',
+            'Police Station',
+            'Receptionist Name',
+            'Receptionist Mobile',
+            'Complain Register Time'
+        ];
+    
+        const rows = filteredComplaints.map(complaint => [
+            complaint.name,
+            complaint.phone,
+            complaint.address,
+            complaint.complainType,
+            complaint.description,
+            complaint.police_station,
+            complaint.receptionistName,
+            complaint.receptionistMobile,
+            complaint.timestamp
+                ? complaint.timestamp.toDate().toLocaleString('en-GB', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: true
+                  })
+                : ''
+        ]);
+    
+        const csvContent = [
+            headers.join(','),
+            ...rows.map(row => row.map(field => `"${field}"`).join(','))
+        ].join('\n');
+    
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+    
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'complaints.csv');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+    
+
     return (
         <div className="w-7xl mt-6 mx-auto p-6 bg-white drop-shadow-lg rounded-lg">
             <h2 className="text-2xl font-bold text-center mb-4">CSV Download</h2>
@@ -68,6 +129,14 @@ const CsvDownload = () => {
             <hr className="my-6" />
 
             <h3 className="text-xl font-semibold mb-2">Complaints</h3>
+            {selectedStation && (
+    <button
+        onClick={downloadCSV}
+        className="mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+    >
+        Download CSV
+    </button>
+)}
             {loading ? (
                 <p>Loading complaints...</p>
             ) : (
