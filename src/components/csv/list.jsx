@@ -72,18 +72,34 @@ const CsvDownload = () => {
                 <p>Loading complaints...</p>
             ) : (
                 <ul className="space-y-2">
-                    {complaints.map(complaint => (
-                        <li key={complaint.id} className="p-4 border rounded-md shadow-sm bg-gray-50">
-                            <p><strong>Address:</strong> {complaint.address}</p>
-                            <p><strong>Complain Type:</strong> {complaint.complainType}</p>
-                            <p><strong>Description:</strong> {complaint.description}</p>
-                            <p><strong>Name:</strong> {complaint.name}</p>
-                            <p><strong>Phone:</strong> {complaint.phone}</p>
-                            <p><strong>Station ID:</strong> {complaint.police_station}</p>
-                            <p><strong>Receptionist Name:</strong> {complaint.receptionistName}</p>
-                            <p><strong>Receptionist Mobile:</strong> {complaint.receptionistMobile}</p>
-                        </li>
-                    ))}
+                    {selectedStation ? (
+                        complaints
+                            .filter(complaint => complaint.police_station === selectedStation)
+                            .map(complaint => (
+                                <li key={complaint.id} className="p-4 border rounded-md shadow-sm bg-gray-50">
+                                    <p><strong>Address:</strong> {complaint.address}</p>
+                                    <p><strong>Complain Type:</strong> {complaint.complainType}</p>
+                                    <p><strong>Description:</strong> {complaint.description}</p>
+                                    <p><strong>Name:</strong> {complaint.name}</p>
+                                    <p><strong>Phone:</strong> {complaint.phone}</p>
+                                    <p><strong>Station ID:</strong> {complaint.police_station}</p>
+                                    <p><strong>Receptionist Name:</strong> {complaint.receptionistName}</p>
+                                    <p><strong>Receptionist Mobile:</strong> {complaint.receptionistMobile}</p>
+                                    <p><strong>Complain Register Time:</strong> {
+                                        complaint.timestamp?.toDate().toLocaleString('en-GB', {
+                                            day: '2-digit',
+                                            month: '2-digit',
+                                            year: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                            hour12: true
+                                        })
+                                    }</p>
+                                </li>
+                            ))
+                    ) : (
+                        <p className="text-gray-500">Please select a police station to view complaints.</p>
+                    )}
                 </ul>
             )}
         </div>
