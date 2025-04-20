@@ -8,6 +8,7 @@ import AddCategoryForm from "./components/category/add.jsx";
 import AddSubCategoryForm from "./components/subcategory/add.jsx";
 import AddPoliceStationForm from "./components/PoliceStation/add.jsx";
 import UserDataList from "./components/UserData/list.jsx";
+import CsvDownload from "./components/csv/list.jsx";
 
 function App() {
     const routesArray = [
@@ -42,6 +43,10 @@ function App() {
         {
             path: "/user-data",
             element: <UserDataList />,
+        },
+        {
+            path: "/csv-download",
+            element: <CsvDownload />,
         },
     ];
 

@@ -69,6 +69,10 @@ const LoggedInHeader = () => {
                                 <li>
                                     <Link to="/user-data" className="hover:text-gray-200">User Data</Link>
                                 </li>
+
+                                <li>
+                                    <Link to="/csv-download" className="hover:text-gray-200">csv download</Link>
+                                </li>
                             </>
                         )}
 
